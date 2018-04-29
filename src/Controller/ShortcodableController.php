@@ -1,6 +1,6 @@
 <?php
 
-namespace Silverstripe\Shortcodable\Controller;
+namespace Sheadawson\Shortcodable\Controller;
 
 use Silverstripe\Shortcodable;
 use SilverStripe\Admin\LeftAndMain;

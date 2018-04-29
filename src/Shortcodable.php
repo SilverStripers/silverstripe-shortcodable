@@ -1,7 +1,8 @@
 <?php
 
-namespace Silverstripe;
+namespace Sheadawson\Shortcodable;
 
+use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Object;
 use SilverStripe\View\Parsers\ShortcodeParser;
 use SilverStripe\Core\Config\Config;
@@ -12,8 +13,11 @@ use SilverStripe\Core\Config\Config;
  *
  * @author shea@livesource.co.nz
  **/
-class Shortcodable extends Object
+class Shortcodable
 {
+
+    use Configurable;
+
     private static $shortcodable_classes = array();
 
     public static function register_classes($classes)

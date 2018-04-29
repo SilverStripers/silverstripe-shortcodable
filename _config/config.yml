@@ -5,7 +5,7 @@ After:
     - cms/*
 ---
 
-LeftAndMain:
+SilverStripe\Admin\LeftAndMain:
   extra_requirements_javascript:
     - 'shortcodable/javascript/editor_plugin.js'
     - 'shortcodable/javascript/shortcodable.js'
@@ -14,16 +14,16 @@ LeftAndMain:
 
 SilverStripe\Control\Director:
   rules:
-    'admin/shortcodable': Silverstripe\Shortcodable\Controller\ShortcodableController
+    'admin/shortcodable': Sheadawson\Shortcodable\Controller\ShortcodableController
 
-Shortcodable:
+SSheadawson\Shortcodable\hortcodable:
   htmleditor_names:
     - cms
 
-HtmlEditorField:
+SilverStripe\Forms\HTMLEditor\HTMLEditorField:
   extensions:
-    - ShortcodableHtmlEditorField
+    - Sheadawson\Shortcodable\Extensions\ShortcodableHtmlEditorField
 
-ShortcodeParser:
+SilverStripe\View\Parsers\ShortcodeParser:
   extensions:
-    - ShortcodableShortcodeParserExtension
+    - Sheadawson\Shortcodable\Extensions\ShortcodableShortcodeParserExtension

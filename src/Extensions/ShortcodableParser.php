@@ -1,6 +1,6 @@
 <?php
 
-namespace Silverstripe\Shortcodable;
+namespace Sheadawson\Shortcodable\Extensions;
 
 use SilverStripe\Core\Object;
 
