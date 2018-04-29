@@ -4,7 +4,6 @@ Name: shortcodable
 
 SilverStripe\Admin\LeftAndMain:
   extra_requirements_javascript:
-    - sheadawson/silverstripe-shortcodable:client/javascript/editor_plugin.js
     - sheadawson/silverstripe-shortcodable:client/javascript/shortcodable.js
   extra_requirements_css:
     - sheadawson/silverstripe-shortcodable:client/css/shortcodable.css
@@ -13,7 +12,7 @@ SilverStripe\Control\Director:
   rules:
     'admin/shortcodable': Sheadawson\Shortcodable\Controller\ShortcodableController
 
-SSheadawson\Shortcodable\hortcodable:
+Sheadawson\Shortcodable\Shortcodable:
   htmleditor_names:
     - cms
 
