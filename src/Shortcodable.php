@@ -18,7 +18,7 @@ class Shortcodable
 
     use Configurable;
 
-    private static $shortcodable_classes = array();
+    private static $shortcodable_classes = [];
 
     public static function register_classes($classes)
     {
@@ -42,7 +42,7 @@ class Shortcodable
 
     public static function get_shortcodable_classes()
     {
-        return Config::inst()->get('Shortcodable', 'shortcodable_classes');
+        return Config::inst()->get(Shortcodable::class, 'shortcodable_classes');
     }
 
     public static function get_shortcodable_classes_fordropdown()

@@ -4,7 +4,7 @@ namespace Sheadawson\Shortcodable\Extensions;
 
 use SilverStripe\Core\Extension;
 
-use Silverstripe\Shortcodable;
+use Sheadawson\Shortcodable\Shortcodable;
 
 class ShortcodableHtmlEditorField extends Extension
 {

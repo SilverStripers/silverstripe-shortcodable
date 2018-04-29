@@ -2,7 +2,7 @@
 
 namespace Sheadawson\Shortcodable\Controller;
 
-use Silverstripe\Shortcodable;
+use Sheadawson\Shortcodable\Shortcodable;
 use SilverStripe\Admin\LeftAndMain;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;

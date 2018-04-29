@@ -28,6 +28,7 @@
     "extra": {
         "expose": [
             "client/css",
+            "client/images",
             "client/javascript"
         ],
         "installer-name": "shortcodable"

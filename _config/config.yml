@@ -1,16 +1,13 @@
 ---
 Name: shortcodable
-After:
-    - framework/*
-    - cms/*
 ---
 
 SilverStripe\Admin\LeftAndMain:
   extra_requirements_javascript:
-    - 'shortcodable/javascript/editor_plugin.js'
-    - 'shortcodable/javascript/shortcodable.js'
+    - sheadawson/silverstripe-shortcodable:client/javascript/editor_plugin.js
+    - sheadawson/silverstripe-shortcodable:client/javascript/shortcodable.js
   extra_requirements_css:
-    - 'shortcodable/css/shortcodable.css'
+    - sheadawson/silverstripe-shortcodable:client/css/shortcodable.css
 
 SilverStripe\Control\Director:
   rules:
