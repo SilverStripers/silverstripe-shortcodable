@@ -30,6 +30,7 @@
              * Make sure the editor has flushed all it's buffers before the form is submitted.
              */
             'from .cms-edit-form': {
+                /*
                 onbeforesubmitform: function(e) {
                      // Save the updated content here, rather than _after_ replacing the placeholders
                     // otherwise you're replacing the shortcode html with the shortcode, then writing
@@ -44,6 +45,7 @@
                         $(this).val(newContent);
                     }
                 }
+                */
             },
         });
 
