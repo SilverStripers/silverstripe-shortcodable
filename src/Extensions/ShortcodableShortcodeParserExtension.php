@@ -9,11 +9,12 @@ class ShortcodableShortcodeParserExtension extends Extension
 {
     public function onBeforeParse(&$content)
     {
+       /// echo '<textarea>' . $content . '</textarea>'; die();
         $parser = $this->owner;
         // Check the shortcode type and convert wrapper to div if block type
         // Regex examples: https://regex101.com/r/bFtD9o/3
         $content = preg_replace_callback(
-            '|<p( [^>]*?)?>\s*?\[((.*)([\s,].*)?)\]\s*?</p>|U',
+            '|<span( [^>]*?)?>\s*?\[((.*)([\s,].*)?)\]\s*?</span>|U',
             function ($matches) use($parser) {
                 $shortcodeName = $matches[3];
                 // Since we're only concerned with shortcodable objects we know the
@@ -30,5 +31,6 @@ class ShortcodableShortcodeParserExtension extends Extension
             },
             $content
         );
+
     }
 }

@@ -23,3 +23,7 @@ SilverStripe\Forms\HTMLEditor\HTMLEditorField:
 SilverStripe\View\Parsers\ShortcodeParser:
   extensions:
     - Sheadawson\Shortcodable\Extensions\ShortcodableShortcodeParserExtension
+
+SilverStripe\Core\Injector\Injector:
+  SilverStripe\View\Parsers\ShortcodeParser:
+    class: Sheadawson\Shortcodable\Extensions\ShortcodableParser

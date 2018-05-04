@@ -14,6 +14,7 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\FormAction;
 use SilverStripe\Forms\Form;
 use SilverStripe\Security\Permission;
+use SilverStripe\View\Parsers\ShortcodeParser;
 
 /**
  * ShortcodableController.
@@ -111,7 +112,7 @@ class ShortcodableController extends LeftAndMain
         if($shortcode = $this->request->requestVar('Shortcode')){
             //remove BOM inside string on cursor position...
             $shortcode = str_replace("\xEF\xBB\xBF", '', $shortcode);
-            $data = singleton('\Silverstripe\Shortcodable\ShortcodableParser')->the_shortcodes(array(), $shortcode);
+            $data = singleton(ShortcodeParser::class)->the_shortcodes(array(), $shortcode);
             if(isset($data[0])){
                 $this->shortcodedata = $data[0];
                 return $this->shortcodedata;
@@ -237,7 +238,7 @@ class ShortcodableController extends LeftAndMain
             $attributes = null;
             if ($shortcode = $request->requestVar('Shortcode')) {
                 $shortcode = str_replace("\xEF\xBB\xBF", '', $shortcode); //remove BOM inside string on cursor position...
-                $shortcodeData = singleton('\Silverstripe\Shortcodable\ShortcodableParser')->the_shortcodes(array(), $shortcode);
+                $shortcodeData = singleton(ShortcodeParser::class)->the_shortcodes(array(), $shortcode);
                 if (isset($shortcodeData[0])) {
                     $attributes = $shortcodeData[0]['atts'];
                 }
