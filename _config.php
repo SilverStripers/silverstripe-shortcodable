@@ -1,27 +1,29 @@
 <?php
 
-use SilverStripe\Core\Config\Config;
-use SilverStripe\Forms\HTMLEditor\HtmlEditorConfig;
-use Silverstripe\Shortcodable;
+use SilverStripe\Core\Manifest\ModuleLoader;
+use SilverStripe\Forms\HTMLEditor\TinyMCEConfig;
+use Silverstripe\Shortcodable\Shortcodable;
 
 if (!defined('SHORTCODABLE_DIR')) {
     define('SHORTCODABLE_DIR', rtrim(basename(dirname(__FILE__))));
 }
-if (SHORTCODABLE_DIR != 'shortcodable') {
+if (SHORTCODABLE_DIR != 'silverstripe-shortcodable') {
     throw new \Exception('The edit shortcodable module is not installed in correct directory. The directory should be named "shortcodable"');
 }
 
 // enable shortcodable buttons and add to HtmlEditorConfig
-$htmlEditorNames = Config::inst()->get('Shortcodable', 'htmleditor_names');
+$htmlEditorNames = Shortcodable::config()->htmleditor_names;
 if (is_array($htmlEditorNames)) {
+    $module = ModuleLoader::inst()->getManifest()->getModule('sheadawson/silverstripe-shortcodable');
     foreach ($htmlEditorNames as $htmlEditorName) {
-        HtmlEditorConfig::get($htmlEditorName)->enablePlugins(array(
-            'shortcodable' => sprintf('../../../%s/javascript/editor_plugin.js', SHORTCODABLE_DIR)
-        ));
-        HtmlEditorConfig::get($htmlEditorName)->addButtonsToLine(1, 'shortcodable');
+        $config = TinyMCEConfig::get($htmlEditorName);
+//        echo $module->getResource('client/javascript/editor_plugin.js');die();
+        $config->enablePlugins(array(
+            'shortcodable' => $module->getResource('client/javascript/editor_plugin.js'),
+        ))->addButtonsToLine(1, 'shortcodable');
     }
 }
 
 // register classes added via yml config
-$classes = Config::inst()->get('Shortcodable', 'shortcodable_classes');
+$classes = Shortcodable::config()->shortcodable_classes;
 Shortcodable::register_classes($classes);

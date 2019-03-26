@@ -2,7 +2,9 @@
 
 namespace Silverstripe\Shortcodable;
 
-use SilverStripe\Core\Object;
+use SilverStripe\Core\Config\Configurable;
+use SilverStripe\Core\Extensible;
+use SilverStripe\Core\Injector\Injectable;
 
 /**
  * ShortcodableParser - temporary measure, based on wordpress parser
@@ -10,8 +12,12 @@ use SilverStripe\Core\Object;
  *
  * @todo update SS ShortcodeParser to offer a public api for converting a shortcode to a data array, and use that instead.
  */
-class ShortcodableParser extends Object
+class ShortcodableParser
 {
+    use Injectable;
+    use Configurable;
+    use Extensible;
+
     /**
      * @var array
      */

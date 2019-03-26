@@ -15,28 +15,30 @@
             init: function (ed, url) {
                 var me = tinyMCE.activeEditor.plugins.shortcodable;
 
+                console.log(url);
+
                 ed.addButton('shortcodable', {
                     title: 'Insert Shortcode',
                     cmd: 'shortcodable',
+                    image: url.replace('javascript', '') + 'images/shortcodable.png',
                     'class': 'mce_shortcode'
                 });
 
-                ed.addCommand('shortcodable', function (ed) {
+                ed.addCommand('shortcodable', function () {
                     jQuery('#' + this.id).entwine('ss').openShortcodeDialog();
                 });
 
-                // On load replace shorcode with placeholder.
-                ed.onLoadContent.add(function (ed, o) {
-                    var newContent = me.replaceShortcodesWithPlaceholders(o.content, ed);
-                    ed.execCommand('mceSetContent', false, newContent, false);
-                });
-
-                ed.onDblClick.add(function (ed, e) {
-                    var dom = ed.dom, node = e.target;
-                    if (node.nodeName === 'IMG' && dom.hasClass(node, 'shortcode-placeholder') && e.button !== 2) {
-                        ed.execCommand('shortcodable');
-                    }
-                });
+                // ed.onLoadContent.add(function (ed, o) {
+                //     var newContent = me.replaceShortcodesWithPlaceholders(o.content, ed);
+                //     ed.execCommand('mceSetContent', false, newContent, false);
+                // });
+                //
+                // ed.onDblClick.add(function (ed, e) {
+                //     var dom = ed.dom, node = e.target;
+                //     if (node.nodeName === 'IMG' && dom.hasClass(node, 'shortcode-placeholder') && e.button !== 2) {
+                //         ed.execCommand('shortcodable');
+                //     }
+                // });
             },
 
             // replace shortcode strings with placeholder images

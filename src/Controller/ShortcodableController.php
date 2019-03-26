@@ -2,11 +2,10 @@
 
 namespace Silverstripe\Shortcodable\Controller;
 
-use Silverstripe\Shortcodable;
+use Silverstripe\Shortcodable\Shortcodable;
 use SilverStripe\Admin\LeftAndMain;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Core\Config\Config;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\CompositeField;
@@ -14,6 +13,7 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\FormAction;
 use SilverStripe\Forms\Form;
 use SilverStripe\Security\Permission;
+use SilverStripe\View\SSViewer;
 
 /**
  * ShortcodableController.
@@ -126,7 +126,7 @@ class ShortcodableController extends LeftAndMain
      **/
     public function ShortcodeForm()
     {
-        Config::inst()->update('SSViewer', 'theme_enabled', false);
+        SSViewer::config()->update('theme_enabled', false);
         $classes = Shortcodable::get_shortcodable_classes_fordropdown();
         $classname = $this->shortcodableclass;
 
@@ -214,7 +214,7 @@ class ShortcodableController extends LeftAndMain
      *
      * @return void
      */
-    public function shortcodePlaceHolder($request)
+    public function shortcodePlaceHolder(HTTPRequest $request)
     {
         if (!Permission::check('CMS_ACCESS_CMSMain')) {
             return;

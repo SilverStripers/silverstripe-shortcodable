@@ -2,7 +2,7 @@
 
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/sheadawson/silverstripe-shortcodable/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/sheadawson/silverstripe-shortcodable/?branch=master)
 
-![Screenshot](https://raw.github.com/sheadawson/silverstripe-shortcodable/master/images/screenshot.png)
+![Screenshot](https://raw.github.com/sheadawson/silverstripe-shortcodable/master//clientimages/screenshot.png)
 
 Provides a GUI for CMS users to insert Shortcodes into the HTMLEditorField + an API for developers to define Shortcodable DataObjects and Views. This allows CMS users to easily embed and customise DataObjects and templated HTML snippets anywhere amongst their page content. Shortcodes can optionally be represented in the WYSIWYG with a custom placeholder image.
 
@@ -32,7 +32,7 @@ MyShortcodableClass:
 
 ## CMS Usage
 Once installed a new icon will appear in the CMS HTMLEditor toolbar. It looks like this:
-![icon](https://raw.github.com/sheadawson/silverstripe-shortcodable/master/images/shortcodable.png)
+![icon](https://raw.github.com/sheadawson/silverstripe-shortcodable/master/client/images/shortcodable.png)
 
 Clicking the toolbar will open a popup that allows you to insert a shortcode into the editor.
 
