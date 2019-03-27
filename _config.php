@@ -19,7 +19,7 @@ if (is_array($htmlEditorNames)) {
         $config = TinyMCEConfig::get($htmlEditorName);
 //        echo $module->getResource('client/javascript/editor_plugin.js');die();
         $config->enablePlugins(array(
-            'shortcodable' => $module->getResource('client/javascript/editor_plugin.js'),
+            'shortcodable' => $module->getResource('client/dist/TinyMCE_shortcodable.js'),
         ))->addButtonsToLine(1, 'shortcodable');
     }
 }

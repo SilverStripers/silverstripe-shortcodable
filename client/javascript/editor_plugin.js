@@ -25,7 +25,12 @@
                 });
 
                 ed.addCommand('shortcodable', function () {
-                    jQuery('#' + this.id).entwine('ss').openShortcodeDialog();
+                    ed.windowManager.open({
+                        title: 'Shortcodes',
+                        onsubmit: function (e) {
+                            //
+                        }
+                    });
                 });
 
                 // ed.onLoadContent.add(function (ed, o) {

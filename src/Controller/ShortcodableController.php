@@ -2,6 +2,9 @@
 
 namespace Silverstripe\Shortcodable\Controller;
 
+use SilverStripe\AssetAdmin\Forms\RemoteFileFormFactory;
+use SilverStripe\CMS\Forms\InternalLinkFormFactory;
+use SilverStripe\Core\Injector\Injector;
 use Silverstripe\Shortcodable\Shortcodable;
 use SilverStripe\Admin\LeftAndMain;
 use SilverStripe\Control\Controller;
@@ -13,6 +16,7 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\FormAction;
 use SilverStripe\Forms\Form;
 use SilverStripe\Security\Permission;
+use Silverstripe\Shortcodable\ShortcodableParser;
 use SilverStripe\View\SSViewer;
 
 /**
@@ -22,23 +26,27 @@ use SilverStripe\View\SSViewer;
  **/
 class ShortcodableController extends LeftAndMain
 {
-    private static $sc_url_segment = 'shortcodable';
+    private static $url_segment = 'shortcodable';
+
     private static $required_permission_codes = 'CMS_ACCESS_LeftAndMain';
+
+    private static $url_rule = '/$Action/$ID';
 
     /**
      * @var array
      */
     private static $allowed_actions = array(
-        'ShortcodeForm' => 'CMS_ACCESS_LeftAndMain',
-        'handleEdit' => 'CMS_ACCESS_LeftAndMain',
-        'shortcodePlaceHolder' => 'CMS_ACCESS_LeftAndMain'
+//        'shortCodeEditForm',
+        'handleEdit',
+        'shortcodePlaceHolder',
     );
 
     /**
      * @var array
      */
     private static $url_handlers = array(
-        'edit/$ShortcodeType!/$Action//$ID/$OtherID' => 'handleEdit'
+//        'schema/shortCodeEditForm' => 'shortCodeEditForm',
+//        'edit/$ShortcodeType!/$Action//$ID/$OtherID' => 'handleEdit'
     );
 
     /**
@@ -78,17 +86,28 @@ class ShortcodableController extends LeftAndMain
      */
     public function Link($action = null)
     {
+        $link = parent::Link($action);
         if ($this->shortcodableclass) {
             return Controller::join_links(
-                $this->config()->url_base,
-                $this->config()->sc_url_segment,
-                'edit',
+                $link,
                 $this->shortcodableclass
             );
         }
-        return Controller::join_links($this->config()->url_base, $this->config()->sc_url_segment, $action);
+        return $link;
     }
 
+    public function getClientConfig()
+    {
+        return array_merge(parent::getClientConfig(), [
+            'reactRouter' => true,
+            'form' => [
+                'shortCodeEditForm' => [
+                    'schemaUrl' => LeftAndMain::singleton()
+                        ->Link('methodSchema/Modals/shortCodeEditForm')
+                ],
+            ],
+        ]);
+    }
     /**
      * handleEdit
      */
@@ -111,7 +130,7 @@ class ShortcodableController extends LeftAndMain
         if($shortcode = $this->request->requestVar('Shortcode')){
             //remove BOM inside string on cursor position...
             $shortcode = str_replace("\xEF\xBB\xBF", '', $shortcode);
-            $data = singleton('\Silverstripe\Shortcodable\ShortcodableParser')->the_shortcodes(array(), $shortcode);
+            $data = singleton(ShortcodableParser::class)->the_shortcodes(array(), $shortcode);
             if(isset($data[0])){
                 $this->shortcodedata = $data[0];
                 return $this->shortcodedata;
@@ -124,7 +143,7 @@ class ShortcodableController extends LeftAndMain
      *
      * @return Form
      **/
-    public function ShortcodeForm()
+    public function shortCodeEditForm($request = null)
     {
         SSViewer::config()->update('theme_enabled', false);
         $classes = Shortcodable::get_shortcodable_classes_fordropdown();
