@@ -4,6 +4,7 @@ namespace Silverstripe\Shortcodable\Controller;
 
 use SilverStripe\AssetAdmin\Forms\RemoteFileFormFactory;
 use SilverStripe\CMS\Forms\InternalLinkFormFactory;
+use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
 use Silverstripe\Shortcodable\Shortcodable;
 use SilverStripe\Admin\LeftAndMain;
@@ -26,27 +27,23 @@ use SilverStripe\View\SSViewer;
  **/
 class ShortcodableController extends LeftAndMain
 {
-    private static $url_segment = 'shortcodable';
-
+    private static $sc_url_segment = 'shortcodable';
     private static $required_permission_codes = 'CMS_ACCESS_LeftAndMain';
-
-    private static $url_rule = '/$Action/$ID';
 
     /**
      * @var array
      */
     private static $allowed_actions = array(
-//        'shortCodeEditForm',
-        'handleEdit',
-        'shortcodePlaceHolder',
+        'ShortcodeForm' => 'CMS_ACCESS_LeftAndMain',
+        'handleEdit' => 'CMS_ACCESS_LeftAndMain',
+        'shortcodePlaceHolder' => 'CMS_ACCESS_LeftAndMain'
     );
 
     /**
      * @var array
      */
     private static $url_handlers = array(
-//        'schema/shortCodeEditForm' => 'shortCodeEditForm',
-//        'edit/$ShortcodeType!/$Action//$ID/$OtherID' => 'handleEdit'
+        'edit/$ShortcodeType!/$Action//$ID/$OtherID' => 'handleEdit'
     );
 
     /**
@@ -86,28 +83,17 @@ class ShortcodableController extends LeftAndMain
      */
     public function Link($action = null)
     {
-        $link = parent::Link($action);
         if ($this->shortcodableclass) {
             return Controller::join_links(
-                $link,
+                $this->config()->url_base,
+                $this->config()->sc_url_segment,
+                'edit',
                 $this->shortcodableclass
             );
         }
-        return $link;
+        return Controller::join_links($this->config()->url_base, $this->config()->sc_url_segment, $action);
     }
 
-    public function getClientConfig()
-    {
-        return array_merge(parent::getClientConfig(), [
-            'reactRouter' => true,
-            'form' => [
-                'shortCodeEditForm' => [
-                    'schemaUrl' => LeftAndMain::singleton()
-                        ->Link('methodSchema/Modals/shortCodeEditForm')
-                ],
-            ],
-        ]);
-    }
     /**
      * handleEdit
      */
@@ -123,15 +109,15 @@ class ShortcodableController extends LeftAndMain
      */
     protected function getShortcodeData()
     {
-        if($this->shortcodedata){
+        if ($this->shortcodedata) {
             return $this->shortcodedata;
         }
         $data = false;
-        if($shortcode = $this->request->requestVar('Shortcode')){
+        if ($shortcode = $this->request->requestVar('Shortcode')) {
             //remove BOM inside string on cursor position...
             $shortcode = str_replace("\xEF\xBB\xBF", '', $shortcode);
             $data = singleton(ShortcodableParser::class)->the_shortcodes(array(), $shortcode);
-            if(isset($data[0])){
+            if (isset($data[0])) {
                 $this->shortcodedata = $data[0];
                 return $this->shortcodedata;
             }
@@ -143,16 +129,16 @@ class ShortcodableController extends LeftAndMain
      *
      * @return Form
      **/
-    public function shortCodeEditForm($request = null)
+    public function ShortcodeForm()
     {
-        SSViewer::config()->update('theme_enabled', false);
+        Config::modify()->set(SSViewer::class, 'theme_enabled', false);
         $classes = Shortcodable::get_shortcodable_classes_fordropdown();
         $classname = $this->shortcodableclass;
 
         if ($this->isnew) {
             $headingText = _t('Shortcodable.EDITSHORTCODE', 'Edit Shortcode');
         } else {
-            $headingText =  sprintf(
+            $headingText = sprintf(
                 _t('Shortcodable.EDITSHORTCODE', 'Edit %s Shortcode'),
                 singleton($this->shortcodableclass)->singular_name()
             );
@@ -177,7 +163,7 @@ class ShortcodableController extends LeftAndMain
             $class = singleton($classname);
             if (is_subclass_of($class, 'DataObject')) {
                 if (singleton($classname)->hasMethod('getShortcodableRecords')) {
-                    $dataObjectSource = singleton($classname)->getShortcodableRecords();
+                    $dataObjectSource = singleton($classname)->getShortcodableRecords($this->request->requestVar('PageID'));
                 } else {
                     $dataObjectSource = $classname::get()->map()->toArray();
                 }

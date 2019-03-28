@@ -1,4 +1,4 @@
-import jQuery from 'jquery';
+import $ from 'jquery';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { loadComponent } from 'lib/Injector';
@@ -21,7 +21,7 @@ const filter = 'div[data-shortcode="embed"]';
 
             editor.addCommand('shortcodable', () => {
                 // See HtmlEditorField.js
-                jQuery(`#${editor.id}`).entwine('ss').openShortCodeDialog();
+                $(`#${editor.id}`).entwine('ss').openShortCodeDialog();
             });
 
             // Replace the tinymce default media commands with the ssembed command
@@ -32,7 +32,7 @@ const filter = 'div[data-shortcode="embed"]';
             });
 
             editor.on('SaveContent', (o) => {
-                const content = jQuery(`<div>${o.content}</div>`);
+                const content = $(`<div>${o.content}</div>`);
 
                 o.content = content.html();
             });
@@ -49,7 +49,30 @@ const filter = 'div[data-shortcode="embed"]';
 })();
 
 
-jQuery.entwine('ss', ($) => {
+$.entwine('ss', ($) => {
+    let dialog = null;
+
+    $('select.shortcode-type').entwine({
+        onchange: function(){
+            console.log('test');
+            dialog.entwine('ss').close();
+            // this.parents('form:first').reloadForm('type', this.val());
+        }
+    });
+
+    $('textarea.htmleditor').entwine({
+        openShortCodeDialog: function() {
+            dialog = $('#insert-shortcode-react__dialog-wrapper');
+
+            if (!dialog.length) {
+                dialog = $('<div id="insert-shortcode-react__dialog-wrapper" />');
+                $('body').append(dialog);
+            }
+
+            dialog.open();
+            return;
+        },
+    });
     $('.js-injector-boot #insert-shortcode-react__dialog-wrapper').entwine({
         Element: null,
 
@@ -98,7 +121,7 @@ jQuery.entwine('ss', ($) => {
                     onClosed={handleHide}
                     onLoadingError={handleLoadingError}
                     bodyClassName="modal__dialog"
-                    className="insert-embed-react__dialog-wrapper"
+                    className="insert-shortcode-react__dialog-wrapper"
                     fileAttributes={attrs}
                 />,
                 this[0]
@@ -119,7 +142,7 @@ jQuery.entwine('ss', ($) => {
          */
         _handleInsert(data) {
             const oldData = this.getData();
-            this.setData(Object.assign({ Url: oldData.Url }, data));
+            // this.setData(Object.assign({ Url: oldData.Url }, data));
             this.insertRemote();
             this.close();
         },
@@ -204,14 +227,14 @@ jQuery.entwine('ss', ($) => {
             const data = this.getData();
 
             // Add base div
-            const base = jQuery('<div/>')
+            const base = $('<div/>')
                 .attr('data-url', data.Url)
                 .attr('data-shortcode', 'embed')
                 .addClass(data.Placement)
                 .addClass('ss-htmleditorfield-file embed');
 
             // Add placeholder image
-            const placeholder = jQuery('<img />')
+            const placeholder = $('<img />')
                 .attr('src', data.PreviewUrl)
                 .addClass('placeholder');
 
@@ -228,7 +251,7 @@ jQuery.entwine('ss', ($) => {
 
             // Add caption p tag
             if (data.CaptionText) {
-                const caption = jQuery('<p />')
+                const caption = $('<p />')
                     .addClass('caption')
                     .text(data.CaptionText);
                 base.append(caption);
@@ -267,19 +290,4 @@ jQuery.entwine('ss', ($) => {
         },
     });
 
-
-    $('textarea.htmleditor').entwine({
-        openShortCodeDialog: function() {
-            let dialog = $('#insert-shortcode-react__dialog-wrapper');
-
-            if (!dialog.length) {
-                dialog = $('<div id="insert-shortcode-react__dialog-wrapper" />');
-                $('body').append(dialog);
-            }
-
-            // dialog.setElement(this);
-            dialog.open();
-            return;
-        },
-    });
 });

@@ -376,6 +376,28 @@ var filter = 'div[data-shortcode="embed"]';
 })();
 
 _jquery2.default.entwine('ss', function ($) {
+    var dialog = null;
+
+    $('select.shortcode-type').entwine({
+        onchange: function onchange() {
+            console.log('test');
+            dialog.entwine('ss').close();
+        }
+    });
+
+    $('textarea.htmleditor').entwine({
+        openShortCodeDialog: function openShortCodeDialog() {
+            dialog = $('#insert-shortcode-react__dialog-wrapper');
+
+            if (!dialog.length) {
+                dialog = $('<div id="insert-shortcode-react__dialog-wrapper" />');
+                $('body').append(dialog);
+            }
+
+            dialog.open();
+            return;
+        }
+    });
     $('.js-injector-boot #insert-shortcode-react__dialog-wrapper').entwine({
         Element: null,
 
@@ -420,7 +442,7 @@ _jquery2.default.entwine('ss', function ($) {
                 onClosed: handleHide,
                 onLoadingError: handleLoadingError,
                 bodyClassName: 'modal__dialog',
-                className: 'insert-embed-react__dialog-wrapper',
+                className: 'insert-shortcode-react__dialog-wrapper',
                 fileAttributes: attrs
             }), this[0]);
         },
@@ -430,7 +452,7 @@ _jquery2.default.entwine('ss', function ($) {
         },
         _handleInsert: function _handleInsert(data) {
             var oldData = this.getData();
-            this.setData(Object.assign({ Url: oldData.Url }, data));
+
             this.insertRemote();
             this.close();
         },
@@ -495,9 +517,9 @@ _jquery2.default.entwine('ss', function ($) {
 
             var data = this.getData();
 
-            var base = (0, _jquery2.default)('<div/>').attr('data-url', data.Url).attr('data-shortcode', 'embed').addClass(data.Placement).addClass('ss-htmleditorfield-file embed');
+            var base = $('<div/>').attr('data-url', data.Url).attr('data-shortcode', 'embed').addClass(data.Placement).addClass('ss-htmleditorfield-file embed');
 
-            var placeholder = (0, _jquery2.default)('<img />').attr('src', data.PreviewUrl).addClass('placeholder');
+            var placeholder = $('<img />').attr('src', data.PreviewUrl).addClass('placeholder');
 
             if (data.Width) {
                 placeholder.attr('width', data.Width);
@@ -509,7 +531,7 @@ _jquery2.default.entwine('ss', function ($) {
             base.append(placeholder);
 
             if (data.CaptionText) {
-                var caption = (0, _jquery2.default)('<p />').addClass('caption').text(data.CaptionText);
+                var caption = $('<p />').addClass('caption').text(data.CaptionText);
                 base.append(caption);
             }
 
@@ -538,20 +560,6 @@ _jquery2.default.entwine('ss', function ($) {
             editor.repaint();
 
             return true;
-        }
-    });
-
-    $('textarea.htmleditor').entwine({
-        openShortCodeDialog: function openShortCodeDialog() {
-            var dialog = $('#insert-shortcode-react__dialog-wrapper');
-
-            if (!dialog.length) {
-                dialog = $('<div id="insert-shortcode-react__dialog-wrapper" />');
-                $('body').append(dialog);
-            }
-
-            dialog.open();
-            return;
         }
     });
 });
@@ -687,17 +695,18 @@ var InsertShortcodeModal = function (_Component) {
     }, {
         key: 'getModalProps',
         value: function getModalProps() {
+            console.log(this.props.className);
             var props = Object.assign({
                 onSubmit: this.handleSubmit,
                 onLoadingError: this.handleLoadingError,
                 showErrorMessage: true,
                 responseClassBad: 'alert alert-danger',
-                identifier: 'AssetAdmin.InsertEmbedModal'
+                identifier: 'Shortcodable.AddShortcodeModal'
             }, this.props, {
                 className: 'insert-embed-modal ' + this.props.className,
                 size: 'lg',
                 onClosed: this.props.onClosed,
-                title: this.props.targetUrl ? _i18n2.default._t('AssetAdmin.EditTitle', 'Media from the web') : _i18n2.default._t('AssetAdmin.CreateTitle', 'Insert new media from the web')
+                title: 'Add short code'
             });
             delete props.sectionConfig;
             delete props.onInsert;
@@ -721,12 +730,7 @@ var InsertShortcodeModal = function (_Component) {
         key: 'handleSubmit',
         value: function handleSubmit(data, action) {
             switch (action) {
-                case 'action_addmedia':
-                    {
-                        this.props.onCreate(data);
-                        break;
-                    }
-                case 'action_insertmedia':
+                case 'action_addshortcode':
                     {
                         this.props.onInsert(data);
                         break;
@@ -776,7 +780,7 @@ InsertShortcodeModal.propTypes = {
     onLoadingError: _propTypes2.default.func
 };
 
-InsertEmbedModal.defaultProps = {
+InsertShortcodeModal.defaultProps = {
     className: '',
     fileAttributes: {}
 };

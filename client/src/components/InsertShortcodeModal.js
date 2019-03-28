@@ -62,22 +62,21 @@ class InsertShortcodeModal extends Component {
      * @returns {object}
      */
     getModalProps() {
+        console.log(this.props.className);
         const props = Object.assign(
             {
                 onSubmit: this.handleSubmit,
                 onLoadingError: this.handleLoadingError,
                 showErrorMessage: true,
                 responseClassBad: 'alert alert-danger',
-                identifier: 'AssetAdmin.InsertEmbedModal',
+                identifier: 'Shortcodable.AddShortcodeModal',
             },
             this.props,
             {
                 className: `insert-embed-modal ${this.props.className}`,
                 size: 'lg',
                 onClosed: this.props.onClosed,
-                title: ((this.props.targetUrl)
-                    ? i18n._t('AssetAdmin.EditTitle', 'Media from the web')
-                    : i18n._t('AssetAdmin.CreateTitle', 'Insert new media from the web')),
+                title: 'Add short code',
             }
         );
         delete props.sectionConfig;
@@ -114,11 +113,7 @@ class InsertShortcodeModal extends Component {
      */
     handleSubmit(data, action) {
         switch (action) {
-            case 'action_addmedia': {
-                this.props.onCreate(data);
-                break;
-            }
-            case 'action_insertmedia': {
+            case 'action_addshortcode': {
                 this.props.onInsert(data);
                 break;
             }
@@ -163,7 +158,7 @@ InsertShortcodeModal.propTypes = {
     onLoadingError: PropTypes.func,
 };
 
-InsertEmbedModal.defaultProps = {
+InsertShortcodeModal.defaultProps = {
     className: '',
     fileAttributes: {},
 };
