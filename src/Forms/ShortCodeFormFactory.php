@@ -22,6 +22,7 @@ use SilverStripe\Forms\FormAction;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DataList;
+use SilverStripe\ORM\DataObject;
 use Silverstripe\Shortcodable\Shortcodable;
 use SilverStripe\View\SSViewer;
 use function singleton;
@@ -72,7 +73,7 @@ class ShortCodeFormFactory implements FormFactory
         // attribute and object id fields
         if ($classname && class_exists($classname)) {
             $class = singleton($classname);
-            if (is_subclass_of($class, 'DataObject')) {
+            if (is_subclass_of($class, DataObject::class)) {
                 if (singleton($classname)->hasMethod('getShortcodableRecords')) {
                     $dataObjectSource = singleton($classname)->getShortcodableRecords();
                 } else {
