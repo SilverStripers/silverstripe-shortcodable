@@ -62,7 +62,6 @@ class InsertShortcodeModal extends Component {
      * @returns {object}
      */
     getModalProps() {
-        console.log(this.props.className);
         const props = Object.assign(
             {
                 onSubmit: this.handleSubmit,
@@ -141,15 +140,6 @@ InsertShortcodeModal.propTypes = {
     }),
     isOpen: PropTypes.bool,
     onInsert: PropTypes.func.isRequired,
-    onCreate: PropTypes.func.isRequired,
-    fileAttributes: PropTypes.shape({
-        Url: PropTypes.string,
-        CaptionText: PropTypes.string,
-        PreviewUrl: PropTypes.string,
-        Placement: PropTypes.string,
-        Width: PropTypes.number,
-        Height: PropTypes.number,
-    }),
     onClosed: PropTypes.func.isRequired,
     className: PropTypes.string,
     actions: PropTypes.object,
@@ -174,7 +164,13 @@ function mapStateToProps(state, ownProps) {
     const editUrl = targetUrl && `${baseEditUrl}/?embedurl=${encodeURIComponent(targetUrl)}`;
     const createUrl = sectionConfig.form.shortCodeEditForm.schemaUrl;
 
-    const schemaUrl = editUrl || createUrl;
+    let schemaUrl = editUrl || createUrl;
+
+    console.log(schemaUrl);
+    if (typeof ownProps.shortCodeType !== 'undefined') {
+        schemaUrl = schemaUrl + '?type='+ownProps.shortCodeType
+    }
+    console.log(schemaUrl);
 
     return {
         sectionConfig,

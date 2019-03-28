@@ -54,9 +54,8 @@ $.entwine('ss', ($) => {
 
     $('select.shortcode-type').entwine({
         onchange: function(){
-            console.log('test');
-            dialog.entwine('ss').close();
-            // this.parents('form:first').reloadForm('type', this.val());
+            console.log(dialog);
+            $('.js-injector-boot #insert-shortcode-react__dialog-wrapper').reRender($(this).val());
         }
     });
 
@@ -97,32 +96,37 @@ $.entwine('ss', ($) => {
             this._renderModal(false);
         },
 
+        reRender(val) {
+            this.close();
+            this._renderModal(true, val);
+        },
+
         /**
          * Renders the react modal component
          *
          * @param {boolean} isOpen
+         * @param {string} type
          * @private
          */
-        _renderModal(isOpen) {
+        _renderModal(isOpen, type) {
             const handleHide = () => this.close();
             // Inserts embed into page
             const handleInsert = (...args) => this._handleInsert(...args);
             // Create edit form from url
-            const handleCreate = (...args) => this._handleCreate(...args);
             const handleLoadingError = (...args) => this._handleLoadingError(...args);
-            const attrs = this.getOriginalAttributes();
+
+            ReactDOM.unmountComponentAtNode(this[0]);
 
             // create/update the react component
             ReactDOM.render(
                 <InjectableInsertShortcodeModal
                     isOpen={isOpen}
-                    onCreate={handleCreate}
                     onInsert={handleInsert}
+                    shortCodeType={type}
                     onClosed={handleHide}
                     onLoadingError={handleLoadingError}
                     bodyClassName="modal__dialog"
                     className="insert-shortcode-react__dialog-wrapper"
-                    fileAttributes={attrs}
                 />,
                 this[0]
             );
@@ -142,76 +146,15 @@ $.entwine('ss', ($) => {
          */
         _handleInsert(data) {
             const oldData = this.getData();
-            // this.setData(Object.assign({ Url: oldData.Url }, data));
-            this.insertRemote();
+
+            // todo - handle insert
+
             this.close();
         },
 
         _handleCreate(data) {
             this.setData(Object.assign({}, this.getData(), data));
             this.open();
-        },
-
-        /**
-         * Find the selected node and get attributes associated to attach the data to the form
-         *
-         * @returns {object}
-         */
-        getOriginalAttributes() {
-            const data = this.getData();
-            const $field = this.getElement();
-            if (!$field) {
-                return data;
-            }
-
-            const node = $($field.getEditor().getSelectedNode());
-            if (!node.length) {
-                return data;
-            }
-
-            // Find root embed shortcode
-            const element = node.closest(filter).add(node.filter(filter));
-            if (!element.length) {
-                return data;
-            }
-            const image = element.find('img.placeholder');
-            // If image has been removed then this shortcode is invalid
-            if (image.length === 0) {
-                return data;
-            }
-
-            const caption = element.find('.caption').text();
-            const width = parseInt(image.width(), 10);
-            const height = parseInt(image.height(), 10);
-
-            return {
-                Url: element.data('url') || data.Url,
-                CaptionText: caption,
-                PreviewUrl: image.attr('src'),
-                Width: isNaN(width) ? null : width,
-                Height: isNaN(height) ? null : height,
-                Placement: this.findPosition(element.prop('class')),
-            };
-        },
-
-        /**
-         * Calculate placement from css class
-         */
-        findPosition(cssClass) {
-            const alignments = [
-                'leftAlone',
-                'center',
-                'rightAlone',
-                'left',
-                'right',
-            ];
-            if (typeof cssClass !== 'string') {
-                return '';
-            }
-            const classes = cssClass.split(' ');
-            return alignments.find((alignment) => (
-                classes.indexOf(alignment) > -1
-            ));
         },
 
         insertRemote() {

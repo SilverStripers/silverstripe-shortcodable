@@ -62,13 +62,37 @@ class ShortCodeFormFactory implements FormFactory
     {
         SSViewer::config()->update('theme_enabled', false);
         $classes = Shortcodable::get_shortcodable_classes_fordropdown();
-        $classname = '';
+        $classname = isset($context['type']) ? $context['type'] : '';
 
         $fields = FieldList::create([
             $classesField = DropdownField::create('ShortcodeType', _t('Shortcodable.SHORTCODETYPE', 'Shortcode type'), $classes, $classname)
                 ->setHasEmptyDefault(true)
                 ->addExtraClass('shortcode-type'),
         ]);
+        // attribute and object id fields
+        if ($classname && class_exists($classname)) {
+            $class = singleton($classname);
+            if (is_subclass_of($class, 'DataObject')) {
+                if (singleton($classname)->hasMethod('getShortcodableRecords')) {
+                    $dataObjectSource = singleton($classname)->getShortcodableRecords();
+                } else {
+                    $dataObjectSource = $classname::get()->map()->toArray();
+                }
+                $fields->push(
+                    DropdownField::create('id', $class->singular_name(), $dataObjectSource)
+                        ->setHasEmptyDefault(true)
+                );
+            }
+            if (singleton($classname)->hasMethod('getShortcodeFields')) {
+                if ($attrFields = singleton($classname)->getShortcodeFields()) {
+                    $fields->push(
+                        CompositeField::create($attrFields)
+                            ->addExtraClass('attributes-composite')
+                            ->setName('AttributesCompositeField')
+                    );
+                }
+            }
+        }
         return $fields;
     }
 

@@ -380,8 +380,8 @@ _jquery2.default.entwine('ss', function ($) {
 
     $('select.shortcode-type').entwine({
         onchange: function onchange() {
-            console.log('test');
-            dialog.entwine('ss').close();
+            console.log(dialog);
+            $('.js-injector-boot #insert-shortcode-react__dialog-wrapper').reRender($(this).val());
         }
     });
 
@@ -416,7 +416,11 @@ _jquery2.default.entwine('ss', function ($) {
             this.setData({});
             this._renderModal(false);
         },
-        _renderModal: function _renderModal(isOpen) {
+        reRender: function reRender(val) {
+            this.close();
+            this._renderModal(true, val);
+        },
+        _renderModal: function _renderModal(isOpen, type) {
             var _this = this;
 
             var handleHide = function handleHide() {
@@ -427,23 +431,20 @@ _jquery2.default.entwine('ss', function ($) {
                 return _this._handleInsert.apply(_this, arguments);
             };
 
-            var handleCreate = function handleCreate() {
-                return _this._handleCreate.apply(_this, arguments);
-            };
             var handleLoadingError = function handleLoadingError() {
                 return _this._handleLoadingError.apply(_this, arguments);
             };
-            var attrs = this.getOriginalAttributes();
+
+            _reactDom2.default.unmountComponentAtNode(this[0]);
 
             _reactDom2.default.render(_react2.default.createElement(InjectableInsertShortcodeModal, {
                 isOpen: isOpen,
-                onCreate: handleCreate,
                 onInsert: handleInsert,
+                shortCodeType: type,
                 onClosed: handleHide,
                 onLoadingError: handleLoadingError,
                 bodyClassName: 'modal__dialog',
-                className: 'insert-shortcode-react__dialog-wrapper',
-                fileAttributes: attrs
+                className: 'insert-shortcode-react__dialog-wrapper'
             }), this[0]);
         },
         _handleLoadingError: function _handleLoadingError() {
@@ -453,57 +454,11 @@ _jquery2.default.entwine('ss', function ($) {
         _handleInsert: function _handleInsert(data) {
             var oldData = this.getData();
 
-            this.insertRemote();
             this.close();
         },
         _handleCreate: function _handleCreate(data) {
             this.setData(Object.assign({}, this.getData(), data));
             this.open();
-        },
-        getOriginalAttributes: function getOriginalAttributes() {
-            var data = this.getData();
-            var $field = this.getElement();
-            if (!$field) {
-                return data;
-            }
-
-            var node = $($field.getEditor().getSelectedNode());
-            if (!node.length) {
-                return data;
-            }
-
-            var element = node.closest(filter).add(node.filter(filter));
-            if (!element.length) {
-                return data;
-            }
-            var image = element.find('img.placeholder');
-
-            if (image.length === 0) {
-                return data;
-            }
-
-            var caption = element.find('.caption').text();
-            var width = parseInt(image.width(), 10);
-            var height = parseInt(image.height(), 10);
-
-            return {
-                Url: element.data('url') || data.Url,
-                CaptionText: caption,
-                PreviewUrl: image.attr('src'),
-                Width: isNaN(width) ? null : width,
-                Height: isNaN(height) ? null : height,
-                Placement: this.findPosition(element.prop('class'))
-            };
-        },
-        findPosition: function findPosition(cssClass) {
-            var alignments = ['leftAlone', 'center', 'rightAlone', 'left', 'right'];
-            if (typeof cssClass !== 'string') {
-                return '';
-            }
-            var classes = cssClass.split(' ');
-            return alignments.find(function (alignment) {
-                return classes.indexOf(alignment) > -1;
-            });
         },
         insertRemote: function insertRemote() {
             var $field = this.getElement();
@@ -695,7 +650,6 @@ var InsertShortcodeModal = function (_Component) {
     }, {
         key: 'getModalProps',
         value: function getModalProps() {
-            console.log(this.props.className);
             var props = Object.assign({
                 onSubmit: this.handleSubmit,
                 onLoadingError: this.handleLoadingError,
@@ -763,15 +717,6 @@ InsertShortcodeModal.propTypes = {
     }),
     isOpen: _propTypes2.default.bool,
     onInsert: _propTypes2.default.func.isRequired,
-    onCreate: _propTypes2.default.func.isRequired,
-    fileAttributes: _propTypes2.default.shape({
-        Url: _propTypes2.default.string,
-        CaptionText: _propTypes2.default.string,
-        PreviewUrl: _propTypes2.default.string,
-        Placement: _propTypes2.default.string,
-        Width: _propTypes2.default.number,
-        Height: _propTypes2.default.number
-    }),
     onClosed: _propTypes2.default.func.isRequired,
     className: _propTypes2.default.string,
     actions: _propTypes2.default.object,
@@ -798,6 +743,12 @@ function mapStateToProps(state, ownProps) {
     var createUrl = sectionConfig.form.shortCodeEditForm.schemaUrl;
 
     var schemaUrl = editUrl || createUrl;
+
+    console.log(schemaUrl);
+    if (typeof ownProps.shortCodeType !== 'undefined') {
+        schemaUrl = schemaUrl + '?type=' + ownProps.shortCodeType;
+    }
+    console.log(schemaUrl);
 
     return {
         sectionConfig: sectionConfig,
