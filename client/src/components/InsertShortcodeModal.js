@@ -154,7 +154,6 @@ InsertShortcodeModal.defaultProps = {
 };
 
 function mapStateToProps(state, ownProps) {
-    console.log(ownProps);
     const sectionConfig = state.config.sections.find((section) => section.name === sectionConfigKey);
 
     // get the schemaUrl to use as a key for overrides
@@ -166,11 +165,9 @@ function mapStateToProps(state, ownProps) {
 
     let schemaUrl = editUrl || createUrl;
 
-    console.log(schemaUrl);
     if (typeof ownProps.shortCodeType !== 'undefined') {
         schemaUrl = schemaUrl + '?type='+ownProps.shortCodeType
     }
-    console.log(schemaUrl);
 
     return {
         sectionConfig,

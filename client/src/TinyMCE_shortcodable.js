@@ -54,7 +54,6 @@ $.entwine('ss', ($) => {
 
     $('select.shortcode-type').entwine({
         onchange: function(){
-            console.log(dialog);
             $('.js-injector-boot #insert-shortcode-react__dialog-wrapper').reRender($(this).val());
         }
     });
@@ -68,6 +67,7 @@ $.entwine('ss', ($) => {
                 $('body').append(dialog);
             }
 
+            dialog.setElement(this);
             dialog.open();
             return;
         },
@@ -148,7 +148,8 @@ $.entwine('ss', ($) => {
             const oldData = this.getData();
 
             // todo - handle insert
-
+            this.setData(Object.assign({ Url: oldData.Url }, data));
+            this.insertsShortcode();
             this.close();
         },
 
@@ -157,7 +158,7 @@ $.entwine('ss', ($) => {
             this.open();
         },
 
-        insertRemote() {
+        insertsShortcode() {
             const $field = this.getElement();
             if (!$field) {
                 return false;
@@ -169,67 +170,75 @@ $.entwine('ss', ($) => {
 
             const data = this.getData();
 
-            // Add base div
-            const base = $('<div/>')
-                .attr('data-url', data.Url)
-                .attr('data-shortcode', 'embed')
-                .addClass(data.Placement)
-                .addClass('ss-htmleditorfield-file embed');
-
-            // Add placeholder image
-            const placeholder = $('<img />')
-                .attr('src', data.PreviewUrl)
-                .addClass('placeholder');
-
-            // Set dimensions
-            if (data.Width) {
-                placeholder.attr('width', data.Width);
-            }
-            if (data.Height) {
-                placeholder.attr('height', data.Height);
-            }
-
-            // Add to base
-            base.append(placeholder);
-
-            // Add caption p tag
-            if (data.CaptionText) {
-                const caption = $('<p />')
-                    .addClass('caption')
-                    .text(data.CaptionText);
-                base.append(caption);
-            }
-
-            // Find best place to put this embed
-            const node = $(editor.getSelectedNode());
-            let replacee = $(null);
-            if (node.length) {
-                replacee = node.filter(filter);
-
-                // Find find closest existing embed
-                if (replacee.length === 0) {
-                    replacee = node.closest(filter);
-                }
-
-                // Fail over to check if the node is an image
-                if (replacee.length === 0) {
-                    replacee = node.filter('img.placeholder');
-                }
-            }
-
-            // Inject
-            if (replacee.length) {
-                replacee.replaceWith(base);
-            } else {
-                // Otherwise insert the whole HTML content
-                editor.repaint();
-                editor.insertContent($('<div />').append(base.clone()).html(), { skip_undo: 1 });
-            }
-
+            editor.repaint();
+            let shortCode = '['+data.ShortcodeType+ ' id="'+data.id+'"][/'+data.ShortcodeType+ ']';
+            editor.insertContent(shortCode, { skip_undo: 1 });
             editor.addUndo();
             editor.repaint();
 
             return true;
+
+            // Add base div
+            // const base = $('<div/>')
+            //     .attr('data-url', data.Url)
+            //     .attr('data-shortcode', 'embed')
+            //     .addClass(data.Placement)
+            //     .addClass('ss-htmleditorfield-file embed');
+
+            // // Add placeholder image
+            // const placeholder = $('<img />')
+            //     .attr('src', data.PreviewUrl)
+            //     .addClass('placeholder');
+            //
+            // // Set dimensions
+            // if (data.Width) {
+            //     placeholder.attr('width', data.Width);
+            // }
+            // if (data.Height) {
+            //     placeholder.attr('height', data.Height);
+            // }
+            //
+            // // Add to base
+            // base.append(placeholder);
+            //
+            // // Add caption p tag
+            // if (data.CaptionText) {
+            //     const caption = $('<p />')
+            //         .addClass('caption')
+            //         .text(data.CaptionText);
+            //     base.append(caption);
+            // }
+            //
+            // // Find best place to put this embed
+            // const node = $(editor.getSelectedNode());
+            // let replacee = $(null);
+            // if (node.length) {
+            //     replacee = node.filter(filter);
+            //
+            //     // Find find closest existing embed
+            //     if (replacee.length === 0) {
+            //         replacee = node.closest(filter);
+            //     }
+            //
+            //     // Fail over to check if the node is an image
+            //     if (replacee.length === 0) {
+            //         replacee = node.filter('img.placeholder');
+            //     }
+            // }
+            //
+            // // Inject
+            // if (replacee.length) {
+            //     replacee.replaceWith(base);
+            // } else {
+            //     // Otherwise insert the whole HTML content
+            //     editor.repaint();
+            //     editor.insertContent($('<div />').append(base.clone()).html(), { skip_undo: 1 });
+            // }
+
+            // editor.addUndo();
+            // editor.repaint();
+            //
+            // return true;
         },
     });
 

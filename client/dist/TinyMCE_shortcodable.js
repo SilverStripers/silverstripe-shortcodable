@@ -380,7 +380,6 @@ _jquery2.default.entwine('ss', function ($) {
 
     $('select.shortcode-type').entwine({
         onchange: function onchange() {
-            console.log(dialog);
             $('.js-injector-boot #insert-shortcode-react__dialog-wrapper').reRender($(this).val());
         }
     });
@@ -394,6 +393,7 @@ _jquery2.default.entwine('ss', function ($) {
                 $('body').append(dialog);
             }
 
+            dialog.setElement(this);
             dialog.open();
             return;
         }
@@ -454,13 +454,15 @@ _jquery2.default.entwine('ss', function ($) {
         _handleInsert: function _handleInsert(data) {
             var oldData = this.getData();
 
+            this.setData(Object.assign({ Url: oldData.Url }, data));
+            this.insertsShortcode();
             this.close();
         },
         _handleCreate: function _handleCreate(data) {
             this.setData(Object.assign({}, this.getData(), data));
             this.open();
         },
-        insertRemote: function insertRemote() {
+        insertsShortcode: function insertsShortcode() {
             var $field = this.getElement();
             if (!$field) {
                 return false;
@@ -472,45 +474,9 @@ _jquery2.default.entwine('ss', function ($) {
 
             var data = this.getData();
 
-            var base = $('<div/>').attr('data-url', data.Url).attr('data-shortcode', 'embed').addClass(data.Placement).addClass('ss-htmleditorfield-file embed');
-
-            var placeholder = $('<img />').attr('src', data.PreviewUrl).addClass('placeholder');
-
-            if (data.Width) {
-                placeholder.attr('width', data.Width);
-            }
-            if (data.Height) {
-                placeholder.attr('height', data.Height);
-            }
-
-            base.append(placeholder);
-
-            if (data.CaptionText) {
-                var caption = $('<p />').addClass('caption').text(data.CaptionText);
-                base.append(caption);
-            }
-
-            var node = $(editor.getSelectedNode());
-            var replacee = $(null);
-            if (node.length) {
-                replacee = node.filter(filter);
-
-                if (replacee.length === 0) {
-                    replacee = node.closest(filter);
-                }
-
-                if (replacee.length === 0) {
-                    replacee = node.filter('img.placeholder');
-                }
-            }
-
-            if (replacee.length) {
-                replacee.replaceWith(base);
-            } else {
-                editor.repaint();
-                editor.insertContent($('<div />').append(base.clone()).html(), { skip_undo: 1 });
-            }
-
+            editor.repaint();
+            var shortCode = '[' + data.ShortcodeType + ' id="' + data.id + '"][/' + data.ShortcodeType + ']';
+            editor.insertContent(shortCode, { skip_undo: 1 });
             editor.addUndo();
             editor.repaint();
 
@@ -731,7 +697,6 @@ InsertShortcodeModal.defaultProps = {
 };
 
 function mapStateToProps(state, ownProps) {
-    console.log(ownProps);
     var sectionConfig = state.config.sections.find(function (section) {
         return section.name === sectionConfigKey;
     });
@@ -744,11 +709,9 @@ function mapStateToProps(state, ownProps) {
 
     var schemaUrl = editUrl || createUrl;
 
-    console.log(schemaUrl);
     if (typeof ownProps.shortCodeType !== 'undefined') {
         schemaUrl = schemaUrl + '?type=' + ownProps.shortCodeType;
     }
-    console.log(schemaUrl);
 
     return {
         sectionConfig: sectionConfig,

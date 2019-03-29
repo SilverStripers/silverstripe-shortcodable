@@ -93,6 +93,7 @@ class ShortCodeFormFactory implements FormFactory
                     );
                 }
             }
+            $this->extend('updateFormFields', $classname, $fields);
         }
         return $fields;
     }
