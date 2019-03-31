@@ -1,3 +1,4 @@
+import $ from 'jquery';
 import i18n from 'i18n';
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
@@ -157,14 +158,16 @@ function mapStateToProps(state, ownProps) {
     const sectionConfig = state.config.sections.find((section) => section.name === sectionConfigKey);
 
     // get the schemaUrl to use as a key for overrides
-    const id = ownProps.shortcodeAttributes ? ownProps.shortcodeAttributes.id : '';
+    // const id = ownProps.shortcodeAttributes ? ownProps.shortcodeAttributes.id : '';
+    const attrs = ownProps.shortcodeAttributes;
     let schemaUrl = sectionConfig.form.shortCodeEditForm.schemaUrl;
 
-    if (typeof ownProps.shortCodeType !== 'undefined') {
-        schemaUrl = schemaUrl + '?type='+ownProps.shortCodeType
-    }
-    if (id) {
-        schemaUrl = schemaUrl + '&id='+id
+    if (typeof ownProps.shortCodeClass !== 'undefined') {
+        schemaUrl = schemaUrl + '?type='+ownProps.shortCodeClass
+        if (attrs) {
+            delete(attrs.type);
+            schemaUrl = schemaUrl + '&' + $.param(attrs);
+        }
     }
 
     return {

@@ -125,7 +125,7 @@ $.entwine('ss', ($) => {
                 <InjectableInsertShortcodeModal
                     isOpen={isOpen}
                     onInsert={handleInsert}
-                    shortCodeType={type}
+                    shortCodeClass={type}
                     onClosed={handleHide}
                     onLoadingError={handleLoadingError}
                     shortcodeAttributes={attrs}
@@ -203,11 +203,6 @@ $.entwine('ss', ($) => {
             return "[" + html + "][/"+ type +"]";
         },
 
-        getAttribute(string, key) {
-            const attr = new RegExp(key + '=\"([^\"]+)\"', 'g').exec(string);
-            return attr ? attr[1] : '';
-        },
-
         getOriginalAttributes() {
             const $field = this.getElement();
             if (!$field) {
@@ -220,14 +215,13 @@ $.entwine('ss', ($) => {
             }
             const $node = $(node);
 
-            const type = this.getAttribute($node.text(), 'type');
-            const id = this.getAttribute($node.text(), 'id');
-            if (!type && !id) return null;
+            const attributes = {};
+            $node.text().match(/[\w-]+=".+?"/g).forEach(function(attribute) {
+                attribute = attribute.match(/([\w-]+)="(.+?)"/);
+                attributes[attribute[1]] = attribute[2];
+            });
 
-            return {
-                'type': type,
-                'id': id,
-            }
+            return attributes;
         },
     });
 
