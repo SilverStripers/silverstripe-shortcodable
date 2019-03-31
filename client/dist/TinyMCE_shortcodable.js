@@ -417,11 +417,16 @@ _jquery2.default.entwine('ss', function ($) {
             this._renderModal(false);
         },
         reRender: function reRender(val) {
-            this.close();
+            this._clearModal();
             this._renderModal(true, val);
         },
         _renderModal: function _renderModal(isOpen, type) {
             var _this = this;
+
+            var attrs = this.getOriginalAttributes();
+            if (attrs && !type) {
+                type = attrs.type;
+            }
 
             var handleHide = function handleHide() {
                 return _this.close();
@@ -435,14 +440,13 @@ _jquery2.default.entwine('ss', function ($) {
                 return _this._handleLoadingError.apply(_this, arguments);
             };
 
-            _reactDom2.default.unmountComponentAtNode(this[0]);
-
             _reactDom2.default.render(_react2.default.createElement(InjectableInsertShortcodeModal, {
                 isOpen: isOpen,
                 onInsert: handleInsert,
                 shortCodeType: type,
                 onClosed: handleHide,
                 onLoadingError: handleLoadingError,
+                shortcodeAttributes: attrs,
                 bodyClassName: 'modal__dialog',
                 className: 'insert-shortcode-react__dialog-wrapper'
             }), this[0]);
@@ -474,13 +478,48 @@ _jquery2.default.entwine('ss', function ($) {
 
             var data = this.getData();
 
-            editor.repaint();
-            var shortCode = '[' + data.ShortcodeType + ' id="' + data.id + '"][/' + data.ShortcodeType + ']';
-            editor.insertContent(shortCode, { skip_undo: 1 });
+            console.log(data);
+
+            var shortCode = '[' + data.ShortcodeType + ' id="' + data.id + '" type="' + data.ShortcodeClass + '"][/' + data.ShortcodeType + ']';
+
+            var attrs = this.getOriginalAttributes();
+            var node = $(editor.getSelectedNode());
+            if (attrs) {
+                node.text(shortCode);
+            } else {
+                editor.repaint(shortCode);
+                editor.insertContent(shortCode, { skip_undo: 1 });
+            }
+
             editor.addUndo();
             editor.repaint();
 
             return true;
+        },
+        getAttribute: function getAttribute(string, key) {
+            var attr = new RegExp(key + '=\"([^\"]+)\"', 'g').exec(string);
+            return attr ? attr[1] : '';
+        },
+        getOriginalAttributes: function getOriginalAttributes() {
+            var $field = this.getElement();
+            if (!$field) {
+                return {};
+            }
+
+            var node = $field.getEditor().getSelectedNode();
+            if (!node) {
+                return {};
+            }
+            var $node = $(node);
+
+            var type = this.getAttribute($node.text(), 'type');
+            var id = this.getAttribute($node.text(), 'id');
+            if (!type && !id) return null;
+
+            return {
+                'type': type,
+                'id': id
+            };
         }
     });
 });
@@ -693,7 +732,7 @@ InsertShortcodeModal.propTypes = {
 
 InsertShortcodeModal.defaultProps = {
     className: '',
-    fileAttributes: {}
+    shortcodeAttributes: {}
 };
 
 function mapStateToProps(state, ownProps) {
@@ -701,22 +740,19 @@ function mapStateToProps(state, ownProps) {
         return section.name === sectionConfigKey;
     });
 
-    var targetUrl = ownProps.fileAttributes ? ownProps.fileAttributes.Url : '';
-    var baseEditUrl = sectionConfig.form.shortCodeEditForm.schemaUrl;
-
-    var editUrl = targetUrl && baseEditUrl + '/?embedurl=' + encodeURIComponent(targetUrl);
-    var createUrl = sectionConfig.form.shortCodeEditForm.schemaUrl;
-
-    var schemaUrl = editUrl || createUrl;
+    var id = ownProps.shortcodeAttributes ? ownProps.shortcodeAttributes.id : '';
+    var schemaUrl = sectionConfig.form.shortCodeEditForm.schemaUrl;
 
     if (typeof ownProps.shortCodeType !== 'undefined') {
         schemaUrl = schemaUrl + '?type=' + ownProps.shortCodeType;
     }
+    if (id) {
+        schemaUrl = schemaUrl + '&id=' + id;
+    }
 
     return {
         sectionConfig: sectionConfig,
-        schemaUrl: schemaUrl,
-        targetUrl: targetUrl
+        schemaUrl: schemaUrl
     };
 }
 

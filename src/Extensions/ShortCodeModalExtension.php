@@ -21,11 +21,15 @@ class ShortCodeModalExtension extends Extension
     public function shortCodeEditForm()
     {
         $type = $this->owner->getRequest()->requestVar('type');
+        $id = $this->owner->getRequest()->requestVar('id');
         return Injector::inst()->get(ShortCodeFormFactory::class)
             ->getForm(
                 $this->getOwner(),
                 'shortCodeEditForm',
-                ['type' => $type]
+                [
+                    'type' => $type,
+                    'id' => $id,
+                ]
             );
     }
 

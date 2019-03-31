@@ -97,7 +97,7 @@ $.entwine('ss', ($) => {
         },
 
         reRender(val) {
-            this.close();
+            this._clearModal();
             this._renderModal(true, val);
         },
 
@@ -109,13 +109,16 @@ $.entwine('ss', ($) => {
          * @private
          */
         _renderModal(isOpen, type) {
+            const attrs = this.getOriginalAttributes();
+            if (attrs && !type) {
+                type = attrs.type;
+            }
+
             const handleHide = () => this.close();
             // Inserts embed into page
             const handleInsert = (...args) => this._handleInsert(...args);
             // Create edit form from url
             const handleLoadingError = (...args) => this._handleLoadingError(...args);
-
-            ReactDOM.unmountComponentAtNode(this[0]);
 
             // create/update the react component
             ReactDOM.render(
@@ -125,6 +128,7 @@ $.entwine('ss', ($) => {
                     shortCodeType={type}
                     onClosed={handleHide}
                     onLoadingError={handleLoadingError}
+                    shortcodeAttributes={attrs}
                     bodyClassName="modal__dialog"
                     className="insert-shortcode-react__dialog-wrapper"
                 />,
@@ -170,75 +174,51 @@ $.entwine('ss', ($) => {
 
             const data = this.getData();
 
-            editor.repaint();
-            let shortCode = '['+data.ShortcodeType+ ' id="'+data.id+'"][/'+data.ShortcodeType+ ']';
-            editor.insertContent(shortCode, { skip_undo: 1 });
+            console.log(data);
+
+            let shortCode = '['+data.ShortcodeType+ ' id="'+data.id+'" type="'+data.ShortcodeClass+'"][/'+data.ShortcodeType+ ']';
+
+            const attrs = this.getOriginalAttributes();
+            const node = $(editor.getSelectedNode());
+            if (attrs) {
+                node.text(shortCode)
+            } else {
+                editor.repaint(shortCode);
+                editor.insertContent(shortCode, { skip_undo: 1 });
+            }
+
             editor.addUndo();
             editor.repaint();
 
             return true;
 
-            // Add base div
-            // const base = $('<div/>')
-            //     .attr('data-url', data.Url)
-            //     .attr('data-shortcode', 'embed')
-            //     .addClass(data.Placement)
-            //     .addClass('ss-htmleditorfield-file embed');
+        },
 
-            // // Add placeholder image
-            // const placeholder = $('<img />')
-            //     .attr('src', data.PreviewUrl)
-            //     .addClass('placeholder');
-            //
-            // // Set dimensions
-            // if (data.Width) {
-            //     placeholder.attr('width', data.Width);
-            // }
-            // if (data.Height) {
-            //     placeholder.attr('height', data.Height);
-            // }
-            //
-            // // Add to base
-            // base.append(placeholder);
-            //
-            // // Add caption p tag
-            // if (data.CaptionText) {
-            //     const caption = $('<p />')
-            //         .addClass('caption')
-            //         .text(data.CaptionText);
-            //     base.append(caption);
-            // }
-            //
-            // // Find best place to put this embed
-            // const node = $(editor.getSelectedNode());
-            // let replacee = $(null);
-            // if (node.length) {
-            //     replacee = node.filter(filter);
-            //
-            //     // Find find closest existing embed
-            //     if (replacee.length === 0) {
-            //         replacee = node.closest(filter);
-            //     }
-            //
-            //     // Fail over to check if the node is an image
-            //     if (replacee.length === 0) {
-            //         replacee = node.filter('img.placeholder');
-            //     }
-            // }
-            //
-            // // Inject
-            // if (replacee.length) {
-            //     replacee.replaceWith(base);
-            // } else {
-            //     // Otherwise insert the whole HTML content
-            //     editor.repaint();
-            //     editor.insertContent($('<div />').append(base.clone()).html(), { skip_undo: 1 });
-            // }
+        getAttribute(string, key) {
+            const attr = new RegExp(key + '=\"([^\"]+)\"', 'g').exec(string);
+            return attr ? attr[1] : '';
+        },
 
-            // editor.addUndo();
-            // editor.repaint();
-            //
-            // return true;
+        getOriginalAttributes() {
+            const $field = this.getElement();
+            if (!$field) {
+                return {};
+            }
+
+            const node = $field.getEditor().getSelectedNode();
+            if (!node) {
+                return {};
+            }
+            const $node = $(node);
+
+            const type = this.getAttribute($node.text(), 'type');
+            const id = this.getAttribute($node.text(), 'id');
+            if (!type && !id) return null;
+
+            return {
+                'type': type,
+                'id': id,
+            }
         },
     });
 

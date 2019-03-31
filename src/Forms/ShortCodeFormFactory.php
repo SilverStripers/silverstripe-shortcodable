@@ -19,10 +19,14 @@ use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\Form;
 use SilverStripe\Forms\FormAction;
+use SilverStripe\Forms\HiddenField;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\DataObject;
+use SilverStripe\ORM\FieldType\DBClassName;
+use SilverStripe\ORM\FieldType\DBField;
+use SilverStripe\ORM\HiddenClass;
 use Silverstripe\Shortcodable\Shortcodable;
 use SilverStripe\View\SSViewer;
 use function singleton;
@@ -64,9 +68,11 @@ class ShortCodeFormFactory implements FormFactory
         SSViewer::config()->update('theme_enabled', false);
         $classes = Shortcodable::get_shortcodable_classes_fordropdown();
         $classname = isset($context['type']) ? $context['type'] : '';
+        $id = isset($context['id']) ? $context['id'] : '';
+//        echo $id;die();
 
         $fields = FieldList::create([
-            $classesField = DropdownField::create('ShortcodeType', _t('Shortcodable.SHORTCODETYPE', 'Shortcode type'), $classes, $classname)
+            $classesField = DropdownField::create('ShortcodeClass', _t('Shortcodable.SHORTCODECLASS', 'Shortcode class'), $classes, $classname)
                 ->setHasEmptyDefault(true)
                 ->addExtraClass('shortcode-type'),
         ]);
@@ -81,7 +87,9 @@ class ShortCodeFormFactory implements FormFactory
                 }
                 $fields->push(
                     DropdownField::create('id', $class->singular_name(), $dataObjectSource)
+                        ->setValue($id)
                         ->setHasEmptyDefault(true)
+                        ->addExtraClass('shortcode-value')
                 );
             }
             if (singleton($classname)->hasMethod('getShortcodeFields')) {
@@ -93,7 +101,10 @@ class ShortCodeFormFactory implements FormFactory
                     );
                 }
             }
-            $this->extend('updateFormFields', $classname, $fields);
+            $typeName = DBField::create_field('DBClassName', $classname)->getShortName();
+            $fields->push(HiddenField::create('ShortcodeType', '', $typeName));
+
+            $this->extend('updateFormFields', $classname, $fields, $context);
         }
         return $fields;
     }

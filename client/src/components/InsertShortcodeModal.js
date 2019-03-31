@@ -150,29 +150,26 @@ InsertShortcodeModal.propTypes = {
 
 InsertShortcodeModal.defaultProps = {
     className: '',
-    fileAttributes: {},
+    shortcodeAttributes: {},
 };
 
 function mapStateToProps(state, ownProps) {
     const sectionConfig = state.config.sections.find((section) => section.name === sectionConfigKey);
 
     // get the schemaUrl to use as a key for overrides
-    const targetUrl = ownProps.fileAttributes ? ownProps.fileAttributes.Url : '';
-    const baseEditUrl = sectionConfig.form.shortCodeEditForm.schemaUrl;
-
-    const editUrl = targetUrl && `${baseEditUrl}/?embedurl=${encodeURIComponent(targetUrl)}`;
-    const createUrl = sectionConfig.form.shortCodeEditForm.schemaUrl;
-
-    let schemaUrl = editUrl || createUrl;
+    const id = ownProps.shortcodeAttributes ? ownProps.shortcodeAttributes.id : '';
+    let schemaUrl = sectionConfig.form.shortCodeEditForm.schemaUrl;
 
     if (typeof ownProps.shortCodeType !== 'undefined') {
         schemaUrl = schemaUrl + '?type='+ownProps.shortCodeType
+    }
+    if (id) {
+        schemaUrl = schemaUrl + '&id='+id
     }
 
     return {
         sectionConfig,
         schemaUrl,
-        targetUrl,
     };
 }
 
