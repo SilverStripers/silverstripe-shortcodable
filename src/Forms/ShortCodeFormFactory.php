@@ -69,7 +69,6 @@ class ShortCodeFormFactory implements FormFactory
         $classes = Shortcodable::get_shortcodable_classes_fordropdown();
         $classname = isset($context['type']) ? $context['type'] : '';
         $id = isset($context['id']) ? $context['id'] : '';
-//        echo $id;die();
 
         $fields = FieldList::create([
             $classesField = DropdownField::create('ShortcodeClass', _t('Shortcodable.SHORTCODECLASS', 'Shortcode class'), $classes, $classname)
