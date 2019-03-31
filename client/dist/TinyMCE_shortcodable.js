@@ -456,9 +456,7 @@ _jquery2.default.entwine('ss', function ($) {
             this.open();
         },
         _handleInsert: function _handleInsert(data) {
-            var oldData = this.getData();
-
-            this.setData(Object.assign({ Url: oldData.Url }, data));
+            this.setData(data);
             this.insertsShortcode();
             this.close();
         },
@@ -476,12 +474,7 @@ _jquery2.default.entwine('ss', function ($) {
                 return false;
             }
 
-            var data = this.getData();
-
-            console.log(data);
-
-            var shortCode = '[' + data.ShortcodeType + ' id="' + data.id + '" type="' + data.ShortcodeClass + '"][/' + data.ShortcodeType + ']';
-
+            var shortCode = this.getHTML();
             var attrs = this.getOriginalAttributes();
             var node = $(editor.getSelectedNode());
             if (attrs) {
@@ -496,6 +489,25 @@ _jquery2.default.entwine('ss', function ($) {
 
             return true;
         },
+
+
+        getHTML: function getHTML() {
+            var data = this.getData();
+            var type = data.ShortcodeType;
+            var html = type + ' type="' + data.ShortcodeClass + '"';
+
+            delete data.SecurityID;
+            delete data.ShortcodeType;
+            delete data.ShortcodeClass;
+            delete data.action_addshortcode;
+
+            for (var key in data) {
+                html += ' ' + key + '="' + data[key] + '"';
+            }
+
+            return "[" + html + "][/" + type + "]";
+        },
+
         getAttribute: function getAttribute(string, key) {
             var attr = new RegExp(key + '=\"([^\"]+)\"', 'g').exec(string);
             return attr ? attr[1] : '';

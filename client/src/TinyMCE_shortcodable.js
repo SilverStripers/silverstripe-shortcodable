@@ -149,10 +149,7 @@ $.entwine('ss', ($) => {
          * @private
          */
         _handleInsert(data) {
-            const oldData = this.getData();
-
-            // todo - handle insert
-            this.setData(Object.assign({ Url: oldData.Url }, data));
+            this.setData(data);
             this.insertsShortcode();
             this.close();
         },
@@ -172,12 +169,7 @@ $.entwine('ss', ($) => {
                 return false;
             }
 
-            const data = this.getData();
-
-            console.log(data);
-
-            let shortCode = '['+data.ShortcodeType+ ' id="'+data.id+'" type="'+data.ShortcodeClass+'"][/'+data.ShortcodeType+ ']';
-
+            const shortCode = this.getHTML();
             const attrs = this.getOriginalAttributes();
             const node = $(editor.getSelectedNode());
             if (attrs) {
@@ -192,6 +184,23 @@ $.entwine('ss', ($) => {
 
             return true;
 
+        },
+
+        getHTML: function(){
+            const data = this.getData();
+            const type = data.ShortcodeType;
+            let html = type + ' type="'+ data.ShortcodeClass + '"';
+
+            delete(data.SecurityID);
+            delete(data.ShortcodeType);
+            delete(data.ShortcodeClass);
+            delete(data.action_addshortcode);
+
+            for (let key in data) {
+                html += ' ' + key + '="' + data[key] + '"';
+            }
+
+            return "[" + html + "][/"+ type +"]";
         },
 
         getAttribute(string, key) {
