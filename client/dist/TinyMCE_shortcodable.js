@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 5);
+/******/ 	return __webpack_require__(__webpack_require__.s = 6);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -276,16 +276,22 @@ module.exports = ReactPropTypesSecret;
 /* 2 */
 /***/ (function(module, exports) {
 
-module.exports = React;
+module.exports = jQuery;
 
 /***/ }),
 /* 3 */
 /***/ (function(module, exports) {
 
-module.exports = i18n;
+module.exports = React;
 
 /***/ }),
 /* 4 */
+/***/ (function(module, exports) {
+
+module.exports = i18n;
+
+/***/ }),
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -300,17 +306,17 @@ if (process.env.NODE_ENV === 'production') {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _jquery = __webpack_require__(6);
+var _jquery = __webpack_require__(2);
 
 var _jquery2 = _interopRequireDefault(_jquery);
 
-var _react = __webpack_require__(2);
+var _react = __webpack_require__(3);
 
 var _react2 = _interopRequireDefault(_react);
 
@@ -328,7 +334,7 @@ var _InsertShortcodeModal = __webpack_require__(10);
 
 var _InsertShortcodeModal2 = _interopRequireDefault(_InsertShortcodeModal);
 
-var _i18n = __webpack_require__(3);
+var _i18n = __webpack_require__(4);
 
 var _i18n2 = _interopRequireDefault(_i18n);
 
@@ -521,21 +527,18 @@ _jquery2.default.entwine('ss', function ($) {
             var $node = $(node);
 
             var attributes = {};
-            $node.text().match(/[\w-]+=".+?"/g).forEach(function (attribute) {
-                attribute = attribute.match(/([\w-]+)="(.+?)"/);
-                attributes[attribute[1]] = attribute[2];
-            });
+            var matches = $node.text().match(/[\w-]+=".+?"/g);
+            if (matches) {
+                matches.forEach(function (attribute) {
+                    attribute = attribute.match(/([\w-]+)="(.+?)"/);
+                    attributes[attribute[1]] = attribute[2];
+                });
+            }
 
             return attributes;
         }
     });
 });
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports) {
-
-module.exports = jQuery;
 
 /***/ }),
 /* 7 */
@@ -571,15 +574,15 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _jquery = __webpack_require__(6);
+var _jquery = __webpack_require__(2);
 
 var _jquery2 = _interopRequireDefault(_jquery);
 
-var _i18n = __webpack_require__(3);
+var _i18n = __webpack_require__(4);
 
 var _i18n2 = _interopRequireDefault(_i18n);
 
-var _react = __webpack_require__(2);
+var _react = __webpack_require__(3);
 
 var _react2 = _interopRequireDefault(_react);
 
@@ -815,7 +818,7 @@ module.exports = SchemaActions;
  */
 
 if (process.env.NODE_ENV !== 'production') {
-  var ReactIs = __webpack_require__(4);
+  var ReactIs = __webpack_require__(5);
 
   // By explicitly using `prop-types` you are opting into new development behavior.
   // http://fb.me/prop-types-in-prod
@@ -1100,7 +1103,7 @@ exports.isSuspense = isSuspense;
 
 
 
-var ReactIs = __webpack_require__(4);
+var ReactIs = __webpack_require__(5);
 var assign = __webpack_require__(19);
 
 var ReactPropTypesSecret = __webpack_require__(1);

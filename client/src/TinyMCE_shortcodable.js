@@ -216,10 +216,13 @@ $.entwine('ss', ($) => {
             const $node = $(node);
 
             const attributes = {};
-            $node.text().match(/[\w-]+=".+?"/g).forEach(function(attribute) {
-                attribute = attribute.match(/([\w-]+)="(.+?)"/);
-                attributes[attribute[1]] = attribute[2];
-            });
+            const matches = $node.text().match(/[\w-]+=".+?"/g);
+            if (matches) {
+                matches.forEach(function(attribute) {
+                    attribute = attribute.match(/([\w-]+)="(.+?)"/);
+                    attributes[attribute[1]] = attribute[2];
+                });
+            }
 
             return attributes;
         },
