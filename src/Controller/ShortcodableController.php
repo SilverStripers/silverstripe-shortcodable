@@ -1,5 +1,7 @@
 <?php
+
 namespace Silverstripe\Shortcodable\Controller;
+
 use SilverStripe\AssetAdmin\Forms\RemoteFileFormFactory;
 use SilverStripe\CMS\Forms\InternalLinkFormFactory;
 use SilverStripe\Core\Injector\Injector;
@@ -14,7 +16,7 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\FormAction;
 use SilverStripe\Forms\Form;
 use SilverStripe\Security\Permission;
-use Silverstripe\Shortcodable\ShortcodableParser;
+use Silverstripe\Shortcodable\Extensions\ShortcodableParser;
 use SilverStripe\View\SSViewer;
 /**
  * ShortcodableController.
@@ -226,7 +228,7 @@ class ShortcodableController extends LeftAndMain
             $attributes = null;
             if ($shortcode = $request->requestVar('Shortcode')) {
                 $shortcode = str_replace("\xEF\xBB\xBF", '', $shortcode); //remove BOM inside string on cursor position...
-                $shortcodeData = singleton('\Silverstripe\Shortcodable\ShortcodableParser')->the_shortcodes(array(), $shortcode);
+                $shortcodeData = singleton(ShortcodableParser::class)->the_shortcodes(array(), $shortcode);
                 if (isset($shortcodeData[0])) {
                     $attributes = $shortcodeData[0]['atts'];
                 }

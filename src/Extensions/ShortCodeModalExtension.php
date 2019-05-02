@@ -5,7 +5,7 @@
  * Time: 4:08 PM
  */
 
-namespace Silverstripe\Shortcodable;
+namespace Silverstripe\Shortcodable\Extensions;
 
 use SilverStripe\Core\Extension;
 use SilverStripe\Core\Injector\Injector;

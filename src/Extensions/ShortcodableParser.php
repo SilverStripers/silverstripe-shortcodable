@@ -1,6 +1,6 @@
 <?php
 
-namespace Silverstripe\Shortcodable;
+namespace Silverstripe\Shortcodable\Extensions;
 
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Extensible;

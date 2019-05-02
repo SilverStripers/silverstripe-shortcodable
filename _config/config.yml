@@ -18,12 +18,12 @@ Silverstripe\Shortcodable\Shortcodable:
 
 HtmlEditorField:
   extensions:
-    - ShortcodableHtmlEditorField
+    - Silverstripe\Shortcodable\Extensions\ShortcodableHtmlEditorField
 
 Silverstripe\Shortcodable\ShortcodeParser:
   extensions:
-    - Silverstripe\Shortcodable\ShortcodableShortcodeParserExtension
+    - Silverstripe\Shortcodable\Extensions\ShortcodableShortcodeParserExtension
 
 SilverStripe\Admin\ModalController:
   extensions:
-    - Silverstripe\Shortcodable\ShortCodeModalExtension
+    - Silverstripe\Shortcodable\Extensions\ShortCodeModalExtension
