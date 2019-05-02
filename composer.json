@@ -19,7 +19,7 @@
     },
     "autoload": {
         "psr-4": {
-            "SilverStripe\\Shortcodable\\": "src/"
+            "SilverStripe\\Shortcodable\\": "src"
         }
     },
     "support": {
@@ -28,7 +28,8 @@
     "extra": {
         "expose": [
             "client"
-        ]
+        ],
+        "installer-name": "silverstripe-shortcodable"
     },
     "homepage": "https://github.com/sheadawson/silverstripe-shortcodable"
 }
