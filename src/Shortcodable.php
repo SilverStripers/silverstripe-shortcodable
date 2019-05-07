@@ -2,6 +2,7 @@
 
 namespace Silverstripe\Shortcodable;
 
+use Silverstripe\Shortcodable\Extensions\ShortcodableParser;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Extensible;
 use SilverStripe\Core\Injector\Injectable;
