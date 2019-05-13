@@ -483,12 +483,8 @@ _jquery2.default.entwine('ss', function ($) {
             var shortCode = this.getHTML();
             var attrs = this.getOriginalAttributes();
             var node = $(editor.getSelectedNode());
-            if (attrs) {
-                node.text(shortCode);
-            } else {
-                editor.repaint(shortCode);
-                editor.insertContent(shortCode, { skip_undo: 1 });
-            }
+
+            tinymce.activeEditor.selection.setContent(shortCode);
 
             editor.addUndo();
             editor.repaint();
