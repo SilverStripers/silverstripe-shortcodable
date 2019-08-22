@@ -2,6 +2,7 @@
 
 namespace Silverstripe\Shortcodable;
 
+use SilverStripe\Core\ClassInfo;
 use Silverstripe\Shortcodable\Extensions\ShortcodableParser;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Extensible;
@@ -38,7 +39,7 @@ class Shortcodable
             if (!singleton($class)->hasMethod('parse_shortcode')) {
                 user_error("Failed to register \"$class\" with shortcodable. $class must have the method parse_shortcode(). See /shortcodable/README.md", E_USER_ERROR);
             }
-            ShortcodeParser::get('default')->register($class, array($class, 'parse_shortcode'));
+            ShortcodeParser::get('default')->register(ClassInfo::shortName($class), array($class, 'parse_shortcode'));
             singleton(ShortcodableParser::class)->register($class);
         }
     }
@@ -54,11 +55,7 @@ class Shortcodable
         $classes = array();
         if (is_array($classList)) {
             foreach ($classList as $class) {
-                if (singleton($class)->hasMethod('singular_name')) {
-                    $classes[$class] = singleton($class)->singular_name();
-                } else {
-                    $classes[$class] = $class;
-                }
+                $classes[$class] = ClassInfo::shortName($class);
             }
         }
         return $classes;
